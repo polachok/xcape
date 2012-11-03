@@ -374,6 +374,7 @@ KeyMap_t *parse_token (Display *dpy, char *token)
 {
     KeyMap_t *km = NULL;
     KeySym    ks;
+    KeyCode   kc;
     char      *from, *to, *key;
 
     to = token;
@@ -403,8 +404,12 @@ KeyMap_t *parse_token (Display *dpy, char *token)
                 return NULL;
             }
 
-            km->to_keys = key_add_key (km->to_keys,
-                    XKeysymToKeycode (dpy, ks));
+	    if ((kc = XKeysymToKeycode (dpy, ks)) == 0)
+	    {
+                fprintf (stderr, "Invalid key: %s\n", key);
+                return NULL;
+	    }
+	    km->to_keys = key_add_key (km->to_keys, kc);
         }
     }
     else
